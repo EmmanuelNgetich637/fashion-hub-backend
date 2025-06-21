@@ -10,8 +10,7 @@ class User(db.Model):
     password_hash = db.Column(db.String(128), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-    orders = db.relationship('Order', backref='user', lazy=True)
+    
 
     def __repr__(self):
         return f'<User {self.username}>'

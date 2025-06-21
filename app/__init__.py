@@ -17,6 +17,7 @@ def create_app():
     jwt.init_app(app)
     migrate.init_app(app, db)
 
-    app.register_blueprint(auth_bp, url_prefix="/auth")
+    app.register_blueprint(auth_bp)
+
 
     return app
