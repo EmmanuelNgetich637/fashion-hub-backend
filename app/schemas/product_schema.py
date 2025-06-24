@@ -11,6 +11,8 @@ class ProductSchema(ma.SQLAlchemyAutoSchema):
         description = ma.auto_field()
         stock = ma.auto_field()
 
-        product_schema = ProductSchema()
-        products_schema = ProductsSchema(many=True)
+        load_instance = True
+
+product_schema = ProductSchema()
+products_schema = ProductSchema(many=True)
         

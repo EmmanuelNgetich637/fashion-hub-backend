@@ -2,27 +2,25 @@ from flask import Blueprint, request, jsonify
 from app.extensions import db
 from app.models.user import User
 from app.schemas.user_schema import user_schema
-from app.utils.security import hash_password
-from flask_jwt_extended import create_access_token
-from app.utils.security import verify_password
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from app.utils.security import hash_password, verify_password
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
-@auth_bp.route('/register',methods=['POST'])
+@auth_bp.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
 
-    #Validate input using Marshmallow
+    # Validate input using Marshmallow
     errors = user_schema.validate(data)
     if errors:
         return jsonify(errors), 400
-    
-    #Check for existing user
+
+    # Check for existing user
     if User.query.filter((User.username == data['username']) | (User.email == data['email'])).first():
         return jsonify({"error": "Username or email already exists"}), 400
 
-    #Hash password
+    # Hash password
     hashed_pw = hash_password(data['password'])
 
     # Create user
@@ -35,7 +33,7 @@ def register():
     db.session.add(user)
     db.session.commit()
 
-     # Generate token
+    # Generate token (string id)
     access_token = create_access_token(identity=str(user.id))
 
     return jsonify({
@@ -58,7 +56,8 @@ def login():
     if not user or not verify_password(password, user.password_hash):
         return jsonify({"error": "Invalid credentials"}), 401
 
-    token = create_access_token(identity=user.id)
+    # Fix: use string for identity
+    token = create_access_token(identity=str(user.id))
 
     return jsonify({
         "message": "Login successful!",
